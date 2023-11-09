@@ -1,18 +1,32 @@
-function r_dibujar(componente, props, children) {
-    props = {...props, children}
+L = console.log;
+J = (o) => JSON.stringify(o, null, 2);
+
+//S: Nuestro React
+let emu_onClick; //U: Nos guardamos onClick para simularlo.
+
+function r_dibujar(componente, props, children, _parent) {
+    props = {...props, children};
+    emu_onClick = emu_onClick || props.onClick;
+    let r;
     if (typeof componente === 'function') {
-        console.log(componente(props));
+        r = componente(props);
     } else {
-        console.log(componente, props);
+        r = { componente, ...props };
     }
+
+    //DBG: L(r);
+    return r;
 } 
 
 function useState(v0) {
-    return [v0, (v1) => console.log("useState", {v1, v0})];
+    return [v0, (v1) => L("useState", {v1, v0})];
 }
 
 function r_main(componente) {
-    componente();
+    let r = r_dibujar(componente);
+    L("r_main", r);
+
+    emu_onClick(); //A: Simulamos click del usuario.
 }
 
 //S: Como se usa (lo de abajo)
@@ -27,6 +41,16 @@ function miPantalla() {
         r_dibujar("button", {onClick: () => setNum(num+1)}),
         r_dibujar(decirNumero, {numero: num}),
     ]);
+
+    /* QUIERO: 
+    {
+        tag: div,
+        children: [
+            { tag: button, props: { onClick, ...} },
+            { tag: div, props: { numero, ...} }
+        ]
+    }
+    */
 }
 
 r_main(miPantalla);
