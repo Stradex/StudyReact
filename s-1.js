@@ -3,6 +3,7 @@ J = (o) => JSON.stringify(o, null, 2);
 
 //S: Nuestro React
 let emu_onClick; //U: Nos guardamos onClick para simularlo.
+let emu_ToUpdate; //U: Los componentes que hay que volver a llamar por que cambio el estado.
 
 function r_dibujar(componente, props, children, _parent) {
     props = {...props, children};
@@ -18,8 +19,22 @@ function r_dibujar(componente, props, children, _parent) {
     return r;
 } 
 
+let State = {}
+
 function useState(v0) {
-    return [v0, (v1) => L("useState", {v1, v0})];
+    let stateId = 1; ///XXX: Conseguir de r_dibujar tree/parent.
+    let value = State[stateId] || v0; //XXX: Fixme: falla con false.
+    State[stateId] = value; //A: Me lo guardo.
+    let setter = (v1) => {
+        L("useState", {v1, value, v0});
+        State[stateId] = v1;
+        emu_ToUpdate = miPantalla; //XXX: Conseguir de r_dibujar tree.
+    }
+    return [
+        value,
+        setter
+    ];
+
 }
 
 function r_main(componente) {
@@ -27,6 +42,8 @@ function r_main(componente) {
     L("r_main", r);
 
     emu_onClick(); //A: Simulamos click del usuario.
+    r = emu_ToUpdate();
+    L("updated", r);
 }
 
 //S: Como se usa (lo de abajo)
