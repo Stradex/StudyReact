@@ -1,7 +1,6 @@
 /*
- A component can be:
-    -> Function
-    -> String
+    TODO: Implement useState
+        -> Redraw when state value changes.
 */
 
 let ComponentsTree = [];
@@ -32,8 +31,10 @@ function r_getStringComponent(strComponent) {
     return {tag: "_text_", children: strComponent}
 }
 
-function r_getFunctionComponent(funcComponent) {
-    return funcComponent();
+function r_getFunctionComponent(funcComponent, props) {
+    if (!props) return funcComponent();
+
+    return {...funcComponent(), props}
 }
 
 function r_draw(component) {
@@ -46,7 +47,12 @@ function r_draw(component) {
             objComponent = r_getStringComponent(component);
         break;
         case "object":
-            objComponent = component;
+
+            if (component.fnComponent) {
+                objComponent = r_getFunctionComponent(component.fnComponent, component.props);
+            } else {
+                objComponent = component;
+            }
         break;
     }
 
@@ -59,7 +65,20 @@ function r_draw(component) {
     return objComponent;
 }
 
+//Emulate onClick on ALL components that have a onClick prop
+function emu_onClick(objTree) {
+    if (typeof objTree !== 'object') return;
+
+    if (objTree.props && objTree.props.onClick) {
+        objTree.props.onClick();
+    }
+    if (objTree.children && typeof objTree.children === 'object') {
+        objTree.children.forEach(child => emu_onClick(child));
+    }
+}
+
 export function r_main(mainComponent) {
     let DOMTree = r_draw(mainComponent);
+    emu_onClick(DOMTree);
     return treeObjToDOMString(DOMTree);
 }

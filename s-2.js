@@ -1,9 +1,10 @@
 import * as CReact from "./cheapReact/c_react.js";
 
 
-function C4() {
+function C4(props) {
     return {
-        tag: "span",
+        tag: "button",
+        props,
         children: ["This is my span text"]
     }
 }
@@ -14,7 +15,9 @@ function C3() {
         tag: "p",
         children: [
             "This is my text: ",
-            C4
+            {fnComponent: C4, props: {
+                onClick: () => console.log("Hello World!")
+            }}
         ]
     }
 }
@@ -26,9 +29,10 @@ function C2() {
     }
 }
 
-function C1() {
+function C1(props) {
     return {
         tag: "div",
+        props,
         children: [
             C2,
             C3
