@@ -54,12 +54,13 @@ function decirNumero(props) {
 
 function miPantalla() {
     let [num, setNum] = useState(10);
+    //CONCLUSIÓN: En vez de r_dibujar, devolver el arbolito de una y todo texto, las funciones las llamamos con eval o algo similar. Más parecido a JSX. Lo que escribimos abajo en QUIERO.
     return r_dibujar("div", null, [
         r_dibujar("button", {onClick: () => setNum(num+1)}),
         r_dibujar(decirNumero, {numero: num}),
     ]);
 
-    /* QUIERO: 
+    /* QUIERO: (Devolver algo así)
     {
         tag: div,
         children: [
